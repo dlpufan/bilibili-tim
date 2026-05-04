@@ -44,6 +44,53 @@ settings.js
 
 用任意压缩工具打成 `.zip` 即可上传至 Chrome 开发者后台。
 
+## 使用 fetch_covers.py 批量抓取封面并抠图
+
+`fetch_covers.py` 可以批量下载指定 UP 主的视频封面，并自动用 AI 模型（rembg）去除背景，生成可直接用于扩展的 `.webp` 素材。
+
+### 环境准备
+
+```bash
+pip install requests tqdm pillow rembg
+```
+
+> 首次运行 rembg 会自动下载 `u2net_human_seg` 模型（约 176 MB），请保持网络畅通。
+
+### 运行
+
+```bash
+python fetch_covers.py
+```
+
+程序会依次提示输入三项信息：
+
+```
+1. 输入 UP 主 UID:        # B 站用户主页 URL 末尾的数字，如 946974
+2. 粘贴 Cookie:           # 登录后从浏览器复制（见下方说明）
+3. 想要爬取多少张图片?     # 回车留空则使用默认值（100）
+```
+
+抓取完成后：
+- 原始封面 `.jpg` 保存在 `covers/`
+- 去背景并**自动重命名**为 `1.webp`、`2.webp`…… 的文件保存在 `covers_nobg/`
+
+将 `covers_nobg/` 中的所有文件复制到扩展的 `images/` 目录（替换原有文件）即可使用。
+
+### 如何获取 Cookie
+
+B 站 API 需要登录态，必须提供 Cookie。
+
+1. 在 Chrome/Edge 中打开 [bilibili.com](https://www.bilibili.com) 并**确保已登录**
+2. 按 `F12` 打开开发者工具，切换到 **Network（网络）** 面板
+3. 刷新页面，在请求列表中点击任意一条发往 `bilibili.com` 的请求
+4. 在右侧 **Headers（标头）** → **Request Headers** 中找到 `Cookie` 字段
+5. 复制 `Cookie:` 后面的**完整字符串**（很长，包含多个 `key=value; ...`）
+6. 粘贴到脚本提示的 `粘贴 Cookie:` 输入框中
+
+> Cookie 包含你的登录凭证，请勿分享给他人。Cookie 有效期通常为数月，失效后重新获取即可。
+
+---
+
 ## 自定义图片
 
 1. 将背景已去除的图片（支持 `.webp` / `.png` / `.jpg`）按顺序命名为 `1.webp`、`2.webp`…… 放入 `images/` 目录，编号不能有空缺
