@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.idea/
+.vscode/
+# 忽略原始大图文件夹，只上传处理好的 images 文件夹
+covers/
+# 忽略一些本地运行生成的日志或临时文件
+*.tmp_renaming

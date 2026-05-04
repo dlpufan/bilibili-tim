@@ -1,0 +1,32 @@
+{
+    "manifest_version": 3,
+    "name": "Bilibili Tim",
+    "version": "1.0.0",
+    "icons": {
+        "96": "icon.png"
+    },
+    "description": "为B站视频封面添加自定义人物贴图",
+    "action": {
+        "default_popup": "settings.html"
+    },
+    "permissions": [
+        "storage"
+    ],
+    "host_permissions": ["*://*.bilibili.com/*"],
+    "content_scripts": [{
+        "matches": ["*://*.bilibili.com/*"],
+        "js": ["bilibeastify.js"],
+        "run_at": "document_idle"
+    }],
+    "web_accessible_resources": [{
+        "resources": [
+            "images/*.png",
+            "images/*.webp",
+            "images/*.jpg",
+            "images/*.json"
+        ],
+        "matches": [
+            "*://*/*"
+        ]
+    }]
+}
