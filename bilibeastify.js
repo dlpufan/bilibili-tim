@@ -1,6 +1,14 @@
 const IMAGES_PATH = "images/";
 const EXTENSION_NAME = chrome.runtime.getManifest().name;
-const OVERLAY_CLASS = "bilibeastify-overlay";
+
+// ─── CSS ::after overlay stylesheet ─────────────────────────────────────────
+// 用 CSS ::after 伪元素注入 overlay，而非 appendChild img，
+// 避免向 Vue 管理的 DOM 添加子节点导致 Vue 虚拟 DOM 补丁崩溃
+const _bboStyleEl = document.createElement('style');
+_bboStyleEl.id = 'bilibeastify-styles';
+_bboStyleEl.textContent = '.bbo-rel{position:relative!important}.bbo-iblk{display:inline-block!important}';
+(document.head || document.documentElement).appendChild(_bboStyleEl);
+let _bboIdCounter = 0;
 
 // Config (defaults)
 let extensionIsDisabled = false;
@@ -14,38 +22,27 @@ let useCustomImage = false;
 function applyOverlay(wrapElement, overlayImageURL, flip = false) {
     if (!overlayImageURL) return;
 
-    // The wrap needs position:relative so the absolute overlay stays inside it
+    // 用 CSS class 代替 inline style 修改定位，减少对 Vue 响应式属性的干扰
     const cs = window.getComputedStyle(wrapElement);
     if (cs.position === "static") {
-        wrapElement.style.position = "relative";
+        wrapElement.classList.add('bbo-rel');
     }
-    // <a> tags are inline by default; make them block so absolute children work
     if (cs.display === "inline") {
-        wrapElement.style.display = "inline-block";
-    }
-    // Ensure overflow is visible so the overlay isn't clipped unexpectedly
-    if (cs.overflow === "hidden") {
-        // keep overflow:hidden (desired for most card designs), overlay will be clipped to card boundary
+        wrapElement.classList.add('bbo-iblk');
     }
 
-    const img = document.createElement("img");
-    img.className = OVERLAY_CLASS;
-    img.src = overlayImageURL;
-    img.style.cssText = `
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-        object-position: bottom left;
-        z-index: 1;
-        pointer-events: none;
-        transform: ${flip ? "scaleX(-1)" : "none"};
-    `;
-    // z-index:1 与 PICTURE 相同，但 appendChild 使 overlay 在 PICTURE 之后（DOM 顺序靠后胜出）
-    // 父容器 .bili-video-card__mask(z-index:2) 是 wrap 的兄弟节点，天然叠在 overlay 之上
-    wrapElement.appendChild(img);
+    // 为该容器分配唯一 ID，通过 CSS ::after 伪元素渲染 overlay
+    // 不向元素添加任何子节点，避免破坏 Vue 虚拟 DOM 对子节点的追踪
+    const id = `bbo${++_bboIdCounter}`;
+    wrapElement.setAttribute('data-bbo-id', id);
+
+    const transform = flip ? 'scaleX(-1)' : 'none';
+    // background-size:contain + background-position:bottom left 等价于原 object-fit/object-position
+    const rule = `[data-bbo-id="${id}"]::after{content:"";position:absolute;bottom:0;left:0;width:100%;height:100%;background-image:url("${overlayImageURL}");background-size:contain;background-position:bottom left;background-repeat:no-repeat;z-index:1;pointer-events:none;transform:${transform};}`;
+    const sheet = _bboStyleEl.sheet;
+    if (sheet) {
+        sheet.insertRule(rule, sheet.cssRules.length);
+    }
 }
 
 // ─── Thumbnail discovery ─────────────────────────────────────────────────────
