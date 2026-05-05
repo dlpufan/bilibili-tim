@@ -9,6 +9,7 @@
 **基于 [MrBeastify-Youtube](https://github.com/MagicJinn/MrBeastify-Youtube) 修改，遵循 [MIT 协议](https://github.com/MagicJinn/MrBeastify-Youtube?tab=MIT-1-ov-file)。**
 
 </div>
+
 ## 在 Chrome 中加载（开发者模式）
 
 无需打包，直接加载源代码即可使用：
