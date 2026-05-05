@@ -2,12 +2,13 @@
 
 # Bilibili Tim
 
-为 B 站视频封面添加自定义人物贴图的 Chrome 扩展。
+**为 B 站视频封面添加自定义人物贴图（如影视飓风 Tim）的 Chrome 趣味扩展。**
+
+> 🚀 **一键安装**：[前往 Chrome 应用商店安装](https://chromewebstore.google.com/detail/bilibili-tim/acnbealmdpajnkibcabmmnbabnhhlhii)
 
 **基于 [MrBeastify-Youtube](https://github.com/MagicJinn/MrBeastify-Youtube) 修改，遵循 [MIT 协议](https://github.com/MagicJinn/MrBeastify-Youtube?tab=MIT-1-ov-file)。**
 
 </div>
-
 ## 在 Chrome 中加载（开发者模式）
 
 无需打包，直接加载源代码即可使用：
